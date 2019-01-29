@@ -135,4 +135,4 @@ def mul(text):
     return res
 
 
-print(start('(x1+x2*(x3+x4)+x5)+x7+(x4*x8+x1)+x6*x2'))
+print(start('(x1+x2*(x3+x4)+x5)+(((x7)))+(x4*x8+x1)+x6*x2'))
