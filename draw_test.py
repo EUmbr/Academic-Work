@@ -3,10 +3,6 @@ import SchemDraw.elements as e
 import SchemDraw.logic as l
 
 
-def drawLines(x, name, dict, length, d):
-    dict[name] = d.add(e.LINE, endpts=[[x, 2], [x, length]], rgtlabel=name)
-
-
 def parse(text, sign):
     c = 0
     a = []
@@ -103,53 +99,28 @@ def check_sign(text):
     return 0
 
 
-def start(text, params, x, y, d):
-    sign = check_sign(text)
-
-    if sign == '+':
-        coords = sum(text, params, x, y, d)
-    elif sign == '*':
-        coords = mul(text, params, d)
-
-    return coords
+def drawLines(x, name, dict, length, d):
+    dict[name] = d.add(e.LINE, endpts=[[x, 2], [x, length]], rgtlabel=name)
 
 
-def drawer(text, d):
-    term = text.replace(' ', '')
-    print(term)
-    for char in text:
-        if char in ('(', ')', '*', '+', '!'):
-            text = text.replace(char, ' ')
-    all_args = sorted(text.split())
-    args = sorted(set(text.split()))
-    x = 2
-    params = {}
-    length = 3*len(all_args)
-    for arg in args:
-        drawLines(x, arg, params, length, d)
-        x += 1
-    x += 2
-    y = length
+def drawAnd(params, elems, coords, x, y, d):
+    gate = d.add(l.andgate(
+                            inputs=len(elems)),
+                            xy=[x, (coords[0][1]+coords[-1][1])/2],
+                            d='right')
 
-    print(start(term, params, x, y, d))
+    count = 1
+    dict = {}
 
-
-def sum(text, params, x, y, d):
-    coords = []
-    elems = parse(text, '+')
+    for elem in elems:
+        dict[elem] = 'gate.in' + str(count)
+        count += 1
 
     for i in range(len(elems)):
-        sign = check_sign(elems[i])
-        if sign == '*':
-            coords.append(mul(elems[i]))
-        else:
-            coords.append((params[elems[i]].start[0], y))
-            y -= 3
-    print(coords)
+        d.add(e.LINE, xy=eval(dict[elems[i]]), tox=coords[i][0], d='left')
+        d.add(e.DOT)
 
-    t = drawOr(params, elems, coords, x, y, d)
-
-    return t
+    return gate.out
 
 
 def drawOr(params, elems, coords, x, y, d):
@@ -172,20 +143,83 @@ def drawOr(params, elems, coords, x, y, d):
     return gate.out
 
 
-def mul(text):
-    res = '{'
-    a = parse(text, '*')
-    for i in range(len(a)):
-        sign = check_sign(a[i])
-        if sign == '+':
-            res = res + sum(a[i]) + ','
-        else:
-            res = res + a[i] + ','
-    res = res[:-1] + '}'
+def drawer(text, d):
+    term = text.replace(' ', '')
+    print(term)
+    for char in text:
+        if char in ('(', ')', '*', '+', '!'):
+            text = text.replace(char, ' ')
+    all_args = sorted(text.split())
+    args = sorted(set(text.split()))
+    x = 2
+    params = {}
+    length = 3*len(all_args)
+    for arg in args:
+        drawLines(x, arg, params, length, d)
+        x += 1
+    x += 5
+    y = length
 
-    return res
+    print(start(term, params, x, y, d))
+
+
+def start(text, params, x, y, d):
+    sign = check_sign(text)
+
+    if sign == '+':
+        coords = sum(text, params, x, y, d)
+    elif sign == '*':
+        coords = mul(text, params, x, y, d)
+
+    return coords
+
+
+def sum(text, params, x, y, d):
+    coords = []
+    elems = parse(text, '+')
+    print('----------sum---------')
+    print(elems, x, y)
+
+    for i in range(len(elems)):
+        sign = check_sign(elems[i])
+        if sign == '*':
+            coords.append(mul(elems[i], params, x, y, d))
+        else:
+            coords.append((params[elems[i]].start[0], y))
+            y -= 3
+    print(coords)
+
+    xses = [x[0] for x in coords]
+    x = max(xses)+2
+
+    t = drawOr(params, elems, coords, x, y, d)
+
+    return t
+
+
+def mul(text, params, x, y, d):
+    coords = []
+    elems = parse(text, '*')
+    print('----------mul---------')
+    print(elems, x, y)
+
+    for i in range(len(elems)):
+        sign = check_sign(elems[i])
+        if sign == '+':
+            coords.append(sum(elems[i], params, x, y, d))
+        else:
+            coords.append((params[elems[i]].start[0], y))
+            y -= 3
+    print(coords)
+
+    xses = [x[0] for x in coords]
+    x = max(xses)+2
+
+    t = drawAnd(params, elems, coords, x, y, d)
+
+    return t
 
 
 d = schem.Drawing()
-drawer('a+b', d)
+drawer('c+a', d)
 d.draw()
