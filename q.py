@@ -16,6 +16,7 @@ def drawAnd(term, x, y, coords, d):
             n.append(i+1)
 
     gate = d.add(l.andgate(inputs=len(mults), inputnots=n), d='right', xy=[x,y])
+    
 
     st = 1
     dict = {}

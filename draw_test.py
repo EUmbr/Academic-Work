@@ -103,11 +103,11 @@ def check_sign(text):
     return 0
 
 
-def start(text, params, d):
+def start(text, params, x, y, d):
     sign = check_sign(text)
 
     if sign == '+':
-        coords = sum(text, params, d)
+        coords = sum(text, params, x, y, d)
     elif sign == '*':
         coords = mul(text, params, d)
 
@@ -124,28 +124,52 @@ def drawer(text, d):
     args = sorted(set(text.split()))
     x = 2
     params = {}
-    length = 5*len(all_args)
+    length = 3*len(all_args)
     for arg in args:
         drawLines(x, arg, params, length, d)
         x += 1
     x += 2
+    y = length
 
-    start(term, params, d)
+    print(start(term, params, x, y, d))
 
 
-def sum(text, params, d):
+def sum(text, params, x, y, d):
     coords = []
-    a = parse(text, '+')
+    elems = parse(text, '+')
 
-    for i in range(len(a)):
-        sign = check_sign(a[i])
+    for i in range(len(elems)):
+        sign = check_sign(elems[i])
         if sign == '*':
-            coords.append(mul(a[i]))
+            coords.append(mul(elems[i]))
         else:
-            coords.append(params[a[i]])
-    res = res[:-1] + ']'
+            coords.append((params[elems[i]].start[0], y))
+            y -= 3
+    print(coords)
 
-    return res
+    t = drawOr(params, elems, coords, x, y, d)
+
+    return t
+
+
+def drawOr(params, elems, coords, x, y, d):
+    gate = d.add(l.orgate(
+                            inputs=len(elems)),
+                            xy=[x, (coords[0][1]+coords[-1][1])/2],
+                            d='right')
+
+    count = 1
+    dict = {}
+
+    for elem in elems:
+        dict[elem] = 'gate.in' + str(count)
+        count += 1
+
+    for i in range(len(elems)):
+        d.add(e.LINE, xy=eval(dict[elems[i]]), tox=coords[i][0], d='left')
+        d.add(e.DOT)
+
+    return gate.out
 
 
 def mul(text):
