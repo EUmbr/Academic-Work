@@ -1,6 +1,8 @@
 import SchemDraw as schem
 import SchemDraw.elements as e
 import SchemDraw.logic as l
+import matplotlib.pyplot as plt
+plt.xkcd()
 
 
 class Drawer():
@@ -40,7 +42,6 @@ class Drawer():
         self.d.add(e.LINE, l=.5, d='right', xy=coords, rgtlabel='f')
         self.d.draw()
 
-
     def sum(self, text):
         coords = {}
         elems = self.parse(text, '+')
@@ -52,7 +53,10 @@ class Drawer():
             if sign == '*':
                 coords[elems[i]] = self.mul(elems[i])
             else:
-                coords[elems[i]] = [self.params[elems[i]].start[0], self.y]
+                if elems[i][0] == '!':
+                    coords[elems[i]] = [self.params[elems[i][1:]].start[0], self.y]
+                else:
+                    coords[elems[i]] = [self.params[elems[i]].start[0], self.y]
                 self.y -= 3
         print(coords)
 
@@ -66,7 +70,9 @@ class Drawer():
 
     def drawOr(self, coords):
         y_coord = self.get_y(coords)
-        gate = self.d.add(l.orgate(inputs=len(coords)),
+        nots = self.get_nots(coords)
+        print(nots)
+        gate = self.d.add(l.orgate(inputs=len(coords), inputnots=nots),
                               xy=[self.x, y_coord],
                               d='right')
 
@@ -92,7 +98,10 @@ class Drawer():
             if sign == '+':
                 coords[elems[i]] = self.sum(elems[i])
             else:
-                coords[elems[i]] = [self.params[elems[i]].start[0], self.y]
+                if elems[i][0] == '!':
+                    coords[elems[i]] = [self.params[elems[i][1:]].start[0], self.y]
+                else:
+                    coords[elems[i]] = [self.params[elems[i]].start[0], self.y]
                 self.y -= 3
         print(coords)
 
@@ -106,8 +115,9 @@ class Drawer():
 
     def drawAnd(self, coords):
         y_coord = self.get_y(coords)
+        nots = self.get_nots(coords)
         gate = self.d.add(l.andgate(
-                                inputs=len(coords)),
+                                inputs=len(coords), inputnots=nots),
                                 xy=[self.x, y_coord],
                                 d='right')
 
@@ -138,7 +148,7 @@ class Drawer():
                 self.d.add(e.LINE, toy=coords[elem][1], d='down')
             self.d.add(e.LINE, tox=coords[elem][0], d='left')
 
-            if len(elem) < 3:
+            if not bool({'+', '*'} & set(elem)):
                 self.d.add(e.DOT)
 
             count+=1
@@ -152,6 +162,16 @@ class Drawer():
             y = list(coords.values())[num][1]
 
         return y
+
+    def get_nots(self, coords):
+        elems = list(coords.keys())
+        print(elems)
+        nots = []
+        for i in range(len(elems)):
+            if elems[i][0] == '!' and not bool({'+', '*'} & set(elems[i])):
+                nots.append(i+1)
+
+        return nots
 
     def parse(self, text, sign):
         c = 0
@@ -233,5 +253,5 @@ class Drawer():
         return 0
 
 
-draw = Drawer('x1+x2*x3')
+draw = Drawer('(!x1+x2*(!x3+x4)+x5)+(((x7)))+(x4*x8+x1)+!x6*x2')
 draw.start()
