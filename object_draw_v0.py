@@ -25,6 +25,7 @@ class Drawer():
                                           [self.x, self.length]],
                                           rgtlabel=arg)
             self.x += 1
+        self.last_x = self.x
         self.x += 5
 
     def start(self):
@@ -36,8 +37,9 @@ class Drawer():
         elif sign == '*':
             coords = self.mul(self.term)
 
+        self.d.add(e.LINE, l=.5, d='right', xy=coords, rgtlabel='f')
         self.d.draw()
-        return coords
+
 
     def sum(self, text):
         coords = {}
@@ -55,6 +57,7 @@ class Drawer():
         print(coords)
 
         xses = [x[0] for x in coords.values()]
+        xses.append(self.last_x)
         self.x = max(xses)+2
 
         t = self.drawOr(coords)
@@ -62,9 +65,9 @@ class Drawer():
         return t
 
     def drawOr(self, coords):
+        y_coord = self.get_y(coords)
         gate = self.d.add(l.orgate(inputs=len(coords)),
-                              xy=[self.x, (list(coords.values())[0][1] +
-                              list(coords.values())[-1][1])/2],
+                              xy=[self.x, y_coord],
                               d='right')
 
         count = 1
@@ -74,6 +77,52 @@ class Drawer():
             dict[elem] = 'gate.in' + str(count)
             count += 1
 
+        self.drawConnect(coords, dict, gate)
+
+        return gate.out
+
+    def mul(self, text):
+        coords = {}
+        elems = self.parse(text, '*')
+        print('----------mul---------')
+        print(elems, self.x, self.y)
+
+        for i in range(len(elems)):
+            sign = self.check_sign(elems[i])
+            if sign == '+':
+                coords[elems[i]] = self.sum(elems[i])
+            else:
+                coords[elems[i]] = [self.params[elems[i]].start[0], self.y]
+                self.y -= 3
+        print(coords)
+
+        xses = [x[0] for x in coords.values()]
+        xses.append(self.last_x)
+        self.x = max(xses)+2
+
+        t = self.drawAnd(coords)
+
+        return t
+
+    def drawAnd(self, coords):
+        y_coord = self.get_y(coords)
+        gate = self.d.add(l.andgate(
+                                inputs=len(coords)),
+                                xy=[self.x, y_coord],
+                                d='right')
+
+        count = 1
+        dict = {}
+
+        for elem in coords:
+            dict[elem] = 'gate.in' + str(count)
+            count += 1
+
+        self.drawConnect(coords, dict, gate)
+
+        return gate.out
+
+    def drawConnect(self, coords, dict, gate):
         count = 1
         all = len(coords)
         unit = 1/(all//2)
@@ -94,48 +143,15 @@ class Drawer():
 
             count+=1
 
-        return gate.out
+    def get_y(self, coords):
+        if len(coords) % 2 == 0:
+            y = (list(coords.values())[0][1] +
+                 list(coords.values())[-1][1])/2
+        else:
+            num = len(coords)//2
+            y = list(coords.values())[num][1]
 
-    def mul(self, text):
-        coords = {}
-        elems = self.parse(text, '*')
-        print('----------mul---------')
-        print(elems, self.x, self.y)
-
-        for i in range(len(elems)):
-            sign = self.check_sign(elems[i])
-            if sign == '+':
-                coords[elems[i]] = self.sum(elems[i])
-            else:
-                coords[elems[i]] = [self.params[elems[i]].start[0], self.y]
-                self.y -= 3
-        print(coords)
-
-        xses = [x[0] for x in coords.values()]
-        self.x = max(xses)+2
-
-        t = self.drawAnd(coords)
-
-        return t
-
-    def drawAnd(self, coords):
-        gate = self.d.add(l.andgate(
-                                inputs=len(coords)),
-                                xy=[self.x, (list(coords.values())[0][1]+list(coords.values())[-1][1])/2],
-                                d='right')
-
-        count = 1
-        dict = {}
-
-        for elem in coords:
-            dict[elem] = 'gate.in' + str(count)
-            count += 1
-
-        for elem in coords:
-            self.d.add(e.LINE, xy=eval(dict[elem]), tox=coords[elem][0], d='left')
-            self.d.add(e.DOT)
-
-        return gate.out
+        return y
 
     def parse(self, text, sign):
         c = 0
@@ -217,5 +233,5 @@ class Drawer():
         return 0
 
 
-draw = Drawer('a+b*c')
+draw = Drawer('x1+x2*x3')
 draw.start()
