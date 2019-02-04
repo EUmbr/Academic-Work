@@ -14,9 +14,9 @@ class Drawer():
                 self.text = self.text.replace(char, ' ')
         self.all_args = sorted(self.text.split())
         self.args = sorted(set(self.text.split()))
-        self.length = 3*len(self.all_args)
+        self.length = 3*len(self.all_args)+1
         self.x = 2
-        self.y = self.length
+        self.y = self.length-1
         self.params = {}
 
     def drawLines(self):
@@ -74,9 +74,25 @@ class Drawer():
             dict[elem] = 'gate.in' + str(count)
             count += 1
 
+        count = 1
+        all = len(coords)
+        unit = 1/(all//2)
+        print(self.length, unit, all, '--------', coords)
         for elem in coords:
-            self.d.add(e.LINE, xy=eval(dict[elem]), tox=coords[elem][0], d='left')
-            self.d.add(e.DOT)
+            length = count*unit if count < (all+1)/2 else (all-count+1)*unit
+            self.d.add(e.LINE, xy=eval(dict[elem]), l=length, d='left')
+            if count < (all+1)/2:
+                self.d.add(e.LINE, toy=coords[elem][1], d='up')
+            elif count == (all+1)/2:
+                pass
+            else:
+                self.d.add(e.LINE, toy=coords[elem][1], d='down')
+            self.d.add(e.LINE, tox=coords[elem][0], d='left')
+
+            if len(elem) < 3:
+                self.d.add(e.DOT)
+
+            count+=1
 
         return gate.out
 
@@ -89,7 +105,7 @@ class Drawer():
         for i in range(len(elems)):
             sign = self.check_sign(elems[i])
             if sign == '+':
-                coords[elems[i]] = sum(elems[i])
+                coords[elems[i]] = self.sum(elems[i])
             else:
                 coords[elems[i]] = [self.params[elems[i]].start[0], self.y]
                 self.y -= 3
@@ -167,7 +183,7 @@ class Drawer():
                 norm_list.append(i)
         return norm_list
 
-    def check(string):
+    def check(self, string):
         stack = []
         for i in string:
             if i == '(':
@@ -201,5 +217,5 @@ class Drawer():
         return 0
 
 
-draw = Drawer('c*a+b')
+draw = Drawer('a+b*c')
 draw.start()
