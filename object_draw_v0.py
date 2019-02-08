@@ -1,8 +1,8 @@
 import SchemDraw as schem
 import SchemDraw.elements as e
 import SchemDraw.logic as l
-import matplotlib.pyplot as plt
-plt.xkcd()
+#import matplotlib.pyplot as plt
+#plt.xkcd()
 
 
 class Drawer():
@@ -253,5 +253,5 @@ class Drawer():
         return 0
 
 
-draw = Drawer('(!x1+x2*(!x3+x4)+x5)+(((x7)))+(x4*x8+x1)+!x6*x2')
+draw = Drawer('(x1+x2+x3)*(x1+x2+!x3)*(x1+!x2+x3)*(!x1+x2+x3)')
 draw.start()
