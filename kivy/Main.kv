@@ -1,0 +1,64 @@
+#: import os os
+
+<MainUI>:
+
+    BoxLayout:
+        orientation:'vertical'
+        padding: 20
+
+        Label:
+            size_hint: [1, .1]
+            text: 'Please, write the logical expression in form below'
+            color: [0, .68, .71, 1]
+
+        AnchorLayout:
+            BoxLayout:
+                orientation: 'horizontal'
+                spacing: 10
+                size_hint: [.6, .12]
+
+                TextInput:
+                    id: equation
+                    text: 'a+b'
+                    hint_text: 'Enter here'
+                    multiline: False
+                    background_color: [.93, .93, .93 ,1]
+                    cursor_color: [0, 0, 0, 1]
+                    foreground_color: [0, 0, 0, 1]
+                    selection_color: [0, .68, .71, .5]
+
+                Button:
+                    text: 'Draw'
+                    size_hint: [.1, 1]
+                    background_normal: ''
+                    background_color: [.24, .29, .32, 1]
+                    on_press:
+                        root.draw(self, equation.text)
+                        root.manager.transition.direction = 'left'
+                        root.manager.current = 'settings'
+
+        AnchorLayout:
+            anchor_y: 'bottom'
+            size_hint: [1, .1]
+
+            Button:
+                text: 'Exit'
+                size_hint: [.1, .8]
+                background_normal: ''
+                background_color: [.24, .29, .32, 1]
+
+
+<SettingsScreen>:
+
+    BoxLayout:
+        orientation: 'vertical'
+
+    BoxLayout:
+        Button:
+            text: 'My settings button'
+        Button:
+            text: 'Back to menu'
+            on_press:
+                root.manager.transition.direction = 'right'
+                root.manager.current = 'menu'
+                os.remove(root.text+'.jpg')

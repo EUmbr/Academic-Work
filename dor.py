@@ -24,9 +24,8 @@ class MyApp(App):
         root = BoxLayout(orientation='vertical', padding=20)
 
         with root.canvas:
-            Color(rgba=(.13,.16,.19,1))
+            Color(rgba=(.13, .16, .19, 1))
             Rectangle(size=[809, 500], pos=root.pos)
-
 
         al1 = AnchorLayout()
 

@@ -16,7 +16,7 @@ class Drawer():
         self.term = self.text.replace(' ', '')
         print(self.term)
         for char in self.text:
-            if char in ('(', ')', '*', '+', '!'):
+            if char in ('(', ')', '&', '+', '!'):
                 self.text = self.text.replace(char, ' ')
         self.all_args = sorted(self.text.split())
         self.args = sorted(set(self.text.split()))
@@ -40,12 +40,12 @@ class Drawer():
 
         if sign == '+':
             coords = self.sum(self.term)
-        elif sign == '*':
+        elif sign == '&':
             coords = self.mul(self.term)
 
         self.d.add(e.LINE, l=.5, d='right', xy=coords, rgtlabel='f')
         self.d.draw()
-        self.d.save('123.jpg')
+        self.d.save(self.term+'.jpg')
 
     def sum(self, text):
         coords = {}
@@ -55,7 +55,7 @@ class Drawer():
 
         for i in range(len(elems)):
             sign = self.check_sign(elems[i])
-            if sign == '*':
+            if sign == '&':
                 coords[elems[i]] = self.mul(elems[i])
             else:
                 if elems[i][0] == '!':
@@ -94,7 +94,7 @@ class Drawer():
 
     def mul(self, text):
         coords = {}
-        elems = self.parse(text, '*')
+        elems = self.parse(text, '&')
         print('----------mul---------')
         print(elems, self.x, self.y)
 
@@ -153,7 +153,7 @@ class Drawer():
                 self.d.add(e.LINE, toy=coords[elem][1], d='down')
             self.d.add(e.LINE, tox=coords[elem][0], d='left')
 
-            if not bool({'+', '*'} & set(elem)):
+            if not bool({'+', '&'} & set(elem)):
                 self.d.add(e.DOT)
 
             count+=1
@@ -173,7 +173,7 @@ class Drawer():
         print(elems)
         nots = []
         for i in range(len(elems)):
-            if elems[i][0] == '!' and not bool({'+', '*'} & set(elems[i])):
+            if elems[i][0] == '!' and not bool({'+', '&'} & set(elems[i])):
                 nots.append(i+1)
 
         return nots
@@ -253,10 +253,10 @@ class Drawer():
                 c -= 1
             if i == ')':
                 c += 1
-            if i == '*' and c == 0:
-                return '*'
+            if i == '&' and c == 0:
+                return '&'
         return 0
 
 
-#draw = Drawer('a*!b*(!c+c+d*(m+!k))+l*h+w*q*e*r*(t+!o)')
+#draw = Drawer('a&!b&(!c+c+d&(m+!k))+l&h+w&q&e&r&(t+!o)')
 #draw.start()

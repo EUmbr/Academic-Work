@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d702b2fc-246b-466f-b810-deb206e5690e" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/draw_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/draw_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/object_draw_v0.py" beforeDir="false" afterPath="$PROJECT_DIR$/object_draw_v0.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -12,20 +13,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file leaf-file-name="draw_test.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/draw_test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="51">
-              <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
+            <state relative-caret-position="-102">
+              <caret line="3" selection-start-line="3" selection-end-line="3" />
               <folding>
                 <element signature="e#0#25#0" expanded="true" />
-                <element signature="e#233#807#0" />
-                <element signature="e#831#917#0" />
-                <element signature="e#937#1122#0" />
-                <element signature="e#1158#1336#0" />
-                <element signature="e#1362#1662#0" />
-                <element signature="e#1691#2027#0" />
               </folding>
             </state>
           </provider>
@@ -58,13 +53,10 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
-            <path>
-              <item name="Kursach" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Kursach" type="462c0819:PsiDirectoryNode" />
-            </path>
             <path>
               <item name="Kursach" type="b2602c69:ProjectViewProjectNode" />
               <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
@@ -84,11 +76,10 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Work" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
@@ -172,6 +163,25 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/draw_test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="51">
+          <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
+          <folding>
+            <element signature="e#0#25#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/q.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#25#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/q.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -183,16 +193,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/draw_test.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
+        <state relative-caret-position="-102">
+          <caret line="3" selection-start-line="3" selection-end-line="3" />
           <folding>
             <element signature="e#0#25#0" expanded="true" />
-            <element signature="e#233#807#0" />
-            <element signature="e#831#917#0" />
-            <element signature="e#937#1122#0" />
-            <element signature="e#1158#1336#0" />
-            <element signature="e#1362#1662#0" />
-            <element signature="e#1691#2027#0" />
           </folding>
         </state>
       </provider>

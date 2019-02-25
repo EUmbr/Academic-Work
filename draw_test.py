@@ -221,5 +221,5 @@ def mul(text, params, x, y, d):
 
 
 d = schem.Drawing()
-drawer('c*a+b', d)
+print(check_sign('!(a+b)'))
 d.draw()
