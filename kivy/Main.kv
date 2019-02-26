@@ -1,6 +1,14 @@
 #: import os os
 
+
+
 <MainUI>:
+    canvas.before:
+        Color:
+            rgba: .13, .16, .19, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
 
     BoxLayout:
         orientation:'vertical'
@@ -8,19 +16,24 @@
 
         Label:
             size_hint: [1, .1]
+            font_size: 25
             text: 'Please, write the logical expression in form below'
             color: [0, .68, .71, 1]
 
         AnchorLayout:
+            anchor_y: 'bottom'
+            size_hint_y: .1
+
             BoxLayout:
                 orientation: 'horizontal'
                 spacing: 10
-                size_hint: [.6, .12]
+                size_hint: [.6, .26]
 
                 TextInput:
                     id: equation
-                    text: 'a+b'
-                    hint_text: 'Enter here'
+                    font_size: 25
+                    on_text: root.pars(self, equation.text)
+                    hint_text: 'a+b&c'
                     multiline: False
                     background_color: [.93, .93, .93 ,1]
                     cursor_color: [0, 0, 0, 1]
@@ -29,13 +42,17 @@
 
                 Button:
                     text: 'Draw'
-                    size_hint: [.1, 1]
+                    size_hint: [.15, 1]
                     background_normal: ''
                     background_color: [.24, .29, .32, 1]
                     on_press:
                         root.draw(self, equation.text)
-                        root.manager.transition.direction = 'left'
-                        root.manager.current = 'settings'
+
+
+        Label:
+            text: 'Use "&" for logical "and", "+" for logical "or", "!" for negation\nForm of variables: single letter or sinle letter + single digit'
+            font_size: 20
+            size_hint_y: .1
 
         AnchorLayout:
             anchor_y: 'bottom'
@@ -43,12 +60,19 @@
 
             Button:
                 text: 'Exit'
-                size_hint: [.1, .8]
+                size_hint: [.1, .27]
+                on_press: app.Exit()
                 background_normal: ''
                 background_color: [.24, .29, .32, 1]
 
 
 <SettingsScreen>:
+    canvas.before:
+        Color:
+            rgba: .13, .16, .19, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
 
     BoxLayout:
         orientation: 'vertical'
@@ -61,4 +85,3 @@
             on_press:
                 root.manager.transition.direction = 'right'
                 root.manager.current = 'menu'
-                os.remove(root.text+'.jpg')
