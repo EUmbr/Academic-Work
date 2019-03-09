@@ -16,6 +16,7 @@ Config.set('graphics', 'width', '809')
 Config.set('graphics', 'height', '500')
 
 
+
 class MyApp(App):
     def exit(self, obj):
         App.get_running_app().stop()

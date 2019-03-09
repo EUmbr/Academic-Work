@@ -6,8 +6,8 @@ import SchemDraw.logic as l
 #import matplotlib.pyplot as plt
 #plt.xkcd()
 
-matplotlib.use('Agg')
 
+matplotlib.use('Agg')
 
 class Drawer():
     def __init__(self, text):
@@ -20,6 +20,13 @@ class Drawer():
                 self.text = self.text.replace(char, ' ')
         self.all_args = sorted(self.text.split())
         self.args = sorted(set(self.text.split()))
+        for arg in self.args:
+            if ((len(arg) == 1 and arg.isalpha()) or
+               (len(arg) == 2 and arg[0].isalpha() and arg[1].isdigit())):
+                pass
+            else:
+                raise Exception
+
         self.length = 3*len(self.all_args)+1
         self.x = 2
         self.y = self.length-1
@@ -36,48 +43,63 @@ class Drawer():
 
     def start(self):
         self.drawLines()
-        sign = self.check_sign(self.term)
+        term = self.del_brackets(self.term)
+        sign = self.check_sign(term)
+        if sign == 0:
+            sign = self.check_unsign(term)
+        print(term, sign)
 
         if sign == '+':
-            coords = self.sum(self.term)
+            coords = self.sum(term)
         elif sign == '&':
-            coords = self.mul(self.term)
+            coords = self.mul(term)
 
         self.d.add(e.LINE, l=.5, d='right', xy=coords, rgtlabel='f')
         self.d.draw()
         self.d.save(self.term+'.jpg')
 
-    def sum(self, text):
+    def sum(self, text, flag=False):
         coords = {}
         elems = self.parse(text, '+')
         print('----------sum---------')
         print(elems, self.x, self.y)
 
         for i in range(len(elems)):
-            sign = self.check_sign(elems[i])
-            if sign == '&':
-                coords[elems[i]] = self.mul(elems[i])
+            print(elems[i])
+            if elems[i][0] == '!' and len(elems[i]) > 3:
+                sign = self.check_sign(elems[i][2:-1])
+                if sign == '&':
+                    coords[elems[i]] = self.mul(elems[i][2:-1], True)
+                elif sign == '+':
+                    coords[elems[i]] = self.sum(elems[i][2:-1], True)
             else:
-                if elems[i][0] == '!':
-                    coords[elems[i]] = [self.params[elems[i][1:]].start[0], self.y]
+                sign = self.check_sign(elems[i])
+                if sign == '&':
+                    coords[elems[i]] = self.mul(elems[i])
                 else:
-                    coords[elems[i]] = [self.params[elems[i]].start[0], self.y]
-                self.y -= 3
+                    if elems[i][0] == '!' and len(elems[i][0]) <= 3:
+                        coords[elems[i]] = [self.params[elems[i][1:]].start[0], self.y]
+                    else:
+                        coords[elems[i]] = [self.params[elems[i]].start[0], self.y]
+                    self.y -= 3
         print(coords)
 
         xses = [x[0] for x in coords.values()]
         xses.append(self.last_x)
         self.x = max(xses)+2
 
-        t = self.drawOr(coords)
+        if len(coords) == 1:
+            return list(coords.values())[0]
+
+        t = self.drawOr(coords, flag)
 
         return t
 
-    def drawOr(self, coords):
+    def drawOr(self, coords, flag):
         y_coord = self.get_y(coords)
         nots = self.get_nots(coords)
         print(nots)
-        gate = self.d.add(l.orgate(inputs=len(coords), inputnots=nots),
+        gate = self.d.add(l.orgate(inputs=len(coords), inputnots=nots, nor=flag),
                               xy=[self.x, y_coord],
                               d='right')
 
@@ -92,37 +114,47 @@ class Drawer():
 
         return gate.out
 
-    def mul(self, text):
+    def mul(self, text, flag=False):
         coords = {}
         elems = self.parse(text, '&')
         print('----------mul---------')
         print(elems, self.x, self.y)
 
         for i in range(len(elems)):
-            sign = self.check_sign(elems[i])
-            if sign == '+':
-                coords[elems[i]] = self.sum(elems[i])
+            if elems[i][0] == '!' and len(elems[i]) > 3:
+                sign = self.check_sign(elems[i][2:-1])
+                if sign == '&':
+                    coords[elems[i]] = self.mul(elems[i][2:-1], True)
+                elif sign == '+':
+                    coords[elems[i]] = self.sum(elems[i][2:-1], True)
             else:
-                if elems[i][0] == '!':
-                    coords[elems[i]] = [self.params[elems[i][1:]].start[0], self.y]
+                sign = self.check_sign(elems[i])
+                if sign == '+':
+                    coords[elems[i]] = self.sum(elems[i])
                 else:
-                    coords[elems[i]] = [self.params[elems[i]].start[0], self.y]
-                self.y -= 3
+                    if elems[i][0] == '!':
+                        coords[elems[i]] = [self.params[elems[i][1:]].start[0], self.y]
+                    else:
+                        coords[elems[i]] = [self.params[elems[i]].start[0], self.y]
+                    self.y -= 3
         print(coords)
 
         xses = [x[0] for x in coords.values()]
         xses.append(self.last_x)
         self.x = max(xses)+2
 
-        t = self.drawAnd(coords)
+        if len(coords) == 1:
+            return list(coords.values())[0]
+
+        t = self.drawAnd(coords, flag)
 
         return t
 
-    def drawAnd(self, coords):
+    def drawAnd(self, coords, flag):
         y_coord = self.get_y(coords)
         nots = self.get_nots(coords)
         gate = self.d.add(l.andgate(
-                                inputs=len(coords), inputnots=nots),
+                                inputs=len(coords), inputnots=nots, nand=flag),
                                 xy=[self.x, y_coord],
                                 d='right')
 
@@ -139,6 +171,7 @@ class Drawer():
 
     def drawConnect(self, coords, dict, gate):
         count = 1
+        print(coords, 'fgfgw')
         all = len(coords)
         unit = 1/(all//2)
         print(self.length, unit, all, '--------', coords)
@@ -193,10 +226,10 @@ class Drawer():
             else:
                 s += i
         a.append(s)
+        print(a)
 
         for i in range(len(a)):
-            while a[i][0] == '(' and a[i][-1] == ')' and self.check(a[i][1:-1]) is True:
-                a[i] = a[i][1:-1]
+            a[i] = self.del_brackets(a[i])
 
         for i in range(len(a)):
             next_sign = self.check_sign(a[i])
@@ -207,6 +240,17 @@ class Drawer():
         a = self.set_list(a)
 
         return a
+
+    def del_brackets(self, text):
+        while text[0] == '(' and text[-1] == ')' and self.check(text[1:-1]) is True:
+            text = text[1:-1]
+        if text[0] == '!' and ('+' in text or '&' in text):
+            while text[1] == text[2] == '(' and text[-1] == text[-2] == ')':
+                text = text[0] + text[2:-1]
+        elif text[0] == '!' and not('+' in text or '&' in text):
+            while len(text) > 3 and text[1] == '(' and text[-1]:
+                text = text[0] + text[2:-1]
+        return text
 
     def set_list(self, a):
         if len(list(set(a))) != len(a):
@@ -257,6 +301,12 @@ class Drawer():
                 return '&'
         return 0
 
+    def check_unsign(self, text):
+        if text[0] is '!' and len(text)>4:
+            sign = self.check_sign(text[2:-1])
+            return sign
+        else:
+            return 0
 
-#draw = Drawer('a&!b&(!c+c+d&(m+!k))+l&h+w&q&e&r&(t+!o)')
-#draw.start()
+#d= Drawer('!(a+bb)')
+#d.start()

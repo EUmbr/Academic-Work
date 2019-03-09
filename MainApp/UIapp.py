@@ -8,7 +8,7 @@ from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.anchorlayout import AnchorLayout
-from object_draw_v0 import Drawer
+from scheme import Drawer
 import os
 
 
@@ -27,11 +27,10 @@ class MainUI(Screen):
 
     def draw(self, instance, text):
         self.text = text
-        draw = Drawer(text)
         try:
+            draw = Drawer(text)
             draw.start()
         except Exception:
-
             content = BoxLayout(orientation='vertical')
             content.add_widget(Label(text='Incorrect input\nTry again!'))
             butt = Button(text='Close', size_hint_y=0.4)
@@ -79,7 +78,7 @@ class MainUI(Screen):
         oper = ('+', '&')
         if len(value) == 1:
             if ((value[-1].isalpha() and self.isEnglish(value[-1])) or
-                    value[-1] is '!'):
+                    value[-1] is '!' or value[-1] is '('):
                 pass
             else:
                 print('wrong')
@@ -87,12 +86,11 @@ class MainUI(Screen):
         elif len(value) > 1:
             v1 = value[-1]
             v2 = value[-2]
-            print(self.isEnglish(v1))
 
-            if ((v1.isalpha() and (v2 in oper or v2 is '!') and self.isEnglish(v1)) or
+            if ((v1.isalpha() and (v2 in oper or v2 is '!' or v2 is '(') and self.isEnglish(v1)) or
                     (v1.isdigit() and v2.isalpha()) or
                     (v1 in oper and v2 not in oper and v2 is not '(') or
-                    (v1 is '(' and (v2 in oper or v2 is '(')) or
+                    (v1 is '(' and (v2 in oper or v2 is '(' or v2 is '!')) or
                     (v1 is ')' and (v2.isalnum() or v2 is ')')) or
                     (v1 is '!' and (v2 in oper or v2 is '('))):
                 pass
@@ -115,6 +113,8 @@ sm.add_widget(s)
 
 class MainApp(App):
     def build(self):
+        self.title = 'Logical Expression Drawer'
+        self.icon = 'network.png'
         return sm
 
 

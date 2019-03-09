@@ -32,8 +32,9 @@
                 TextInput:
                     id: equation
                     font_size: 25
+                    on_text_validate: root.draw(self, equation.text)
                     on_text: root.pars(self, equation.text)
-                    hint_text: 'a+b&c'
+                    hint_text: 'a+b&!c'
                     multiline: False
                     background_color: [.93, .93, .93 ,1]
                     cursor_color: [0, 0, 0, 1]
